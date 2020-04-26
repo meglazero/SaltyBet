@@ -54,7 +54,7 @@ class SaltyBetter():
         while True:
             betSlice = betStatus.text[len(betStatus.text)-7:len(betStatus.text)-3]
             
-            if(i > 60):
+            if(i > 60 or tourney == None):
                 try:
                     tourney = self.driver.find_element_by_xpath('//*[@id="tournament-note"]')
                     i = 0
@@ -95,23 +95,23 @@ class SaltyBetter():
                         i+=1
                 except:
                     print('Tourney bet failed')
-
-            if(betSlice == 'OPEN'):
-                wager.send_keys(wage)
-                roulette = round(random.random())
-                sleep(1)
-                print('Balance: ' + balance.text)
-                if(roulette == 0):
-                    bet = ' Red'
-                    self.player1(wage)
-                elif(roulette == 1):
-                    bet = 'Blue'
-                    self.player2(wage)
-                i = 0
             else:
-                # print("couldn't bet")
-                sleep(1)
-                i+=1
+                if(betSlice == 'OPEN'):
+                    wager.send_keys(wage)
+                    roulette = round(random.random())
+                    sleep(1)
+                    print('Balance: ' + balance.text)
+                    if(roulette == 0):
+                        bet = ' Red'
+                        self.player1(wage)
+                    elif(roulette == 1):
+                        bet = 'Blue'
+                        self.player2(wage)
+                    i = 0
+                else:
+                    # print("couldn't bet")
+                    sleep(1)
+                    i+=1
 
         
 
