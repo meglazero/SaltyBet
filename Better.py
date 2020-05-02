@@ -9,17 +9,25 @@ class SaltyBetter():
         chrome_options.add_argument("--headless")
         chrome_options.add_argument("--window-size=1920x1080")
         self.driver = webdriver.Chrome(options=chrome_options)
+        
 
     def login(self):
         self.driver.get('https://www.saltybet.com/authenticate?signin=1')
 
         sleep(2)
 
+        options = open(r".\options.txt", "r")
+        user = options.readline()
+        userpass = options.readline()
+        options.close()
+        user = str(user[10:len(user)])
+        userpass = str(userpass[10:len(userpass)])
+
         email = self.driver.find_element_by_xpath('//*[@id="email"]')
-        email.send_keys('meglazero.ex@gmail.com')
+        email.send_keys(user)
 
         password = self.driver.find_element_by_xpath('//*[@id="pword"]')
-        password.send_keys('Godzilla1')
+        password.send_keys(userpass)
 
         sign_in = self.driver.find_element_by_xpath('//*[@id="signinform"]/div[3]/div/span/input')
         sign_in.click()
@@ -117,5 +125,5 @@ class SaltyBetter():
 
 bet = SaltyBetter()
 bet.login()
-sleep(2)
-bet.autobet(100)
+# sleep(2)
+# bet.autobet(100)
