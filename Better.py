@@ -78,10 +78,6 @@ class SaltyBetter():
                 else:
                     print('Bet incorrectly')
                 sleep(5)
-            # if(betSlice == 'Blue'):
-            #     print("Blue won")
-            #     sleep(5)
-            # if(wager.get_attribute("style") == "border-color: rgb(77, 176, 68); display: inline-block;"):
             if(tourney != None):
                 try:
                     if(betSlice == 'OPEN'):
@@ -98,7 +94,6 @@ class SaltyBetter():
                             self.player2(b)
                         i = 0
                     else:
-                        # print("couldn't bet")
                         sleep(1)
                         i+=1
                 except:
@@ -117,7 +112,6 @@ class SaltyBetter():
                         self.player2(wage)
                     i = 0
                 else:
-                    # print("couldn't bet")
                     sleep(1)
                     i+=1
 
@@ -125,5 +119,5 @@ class SaltyBetter():
 
 bet = SaltyBetter()
 bet.login()
-# sleep(2)
-# bet.autobet(100)
+sleep(2)
+bet.autobet(100)
