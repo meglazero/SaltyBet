@@ -1,2 +1,2 @@
-username: 
-password: 
+username: meglazero.ex@gmail.com
+password: Godzilla1

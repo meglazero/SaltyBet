@@ -1,4 +1,4 @@
-url  :
-user :
-dbpw :
-db   :
+url  :meglazero.mysql.pythonanywhere-services.com
+user :meglazero
+dbpw :Extrimaker
+db   :meglazero$Better
