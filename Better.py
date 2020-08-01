@@ -54,23 +54,25 @@ class SaltyBetter():
     def player1(self, wageBet):
         try:
             p1_button = self.driver.find_element_by_xpath('//*[@id="player1"]')
-            print("Bet Team Red: " + self.p1_name +
-                  '(' + self.p1 + ') $' + str(wageBet))
             p1_button.click()
-            sleep(60)
+            if(self.p1 != '0'):
+                return 'Bet Team Red: ' + self.p1_name + '(' + self.p1 + ') $' + str(wageBet) + ' | '
+            else:
+                return 'Bet Team Red: ' + self.p1_name + ' $' + str(wageBet) + ' | '
         except:
-            print('Failed to bet: P1')
+            print("Failed to bet", flush=True)
             self.bet = None
 
     def player2(self, wageBet):
         try:
             p2_button = self.driver.find_element_by_xpath('//*[@id="player2"]')
-            print("Bet Team Blue: " + self.p2_name +
-                  '(' + self.p2 + ') $' + str(wageBet))
             p2_button.click()
-            sleep(60)
+            if(self.p1 != '0'):
+                return 'Bet Team Blue: ' + self.p2_name + '(' + self.p2 + ') $' + str(wageBet) + ' | '
+            else:
+                return 'Bet Team Blue: ' + self.p2_name + ' $' + str(wageBet) + ' | '
         except:
-            print("Failed to bet: P2")
+            print("Failed to bet", flush=True)
             self.bet = None
 
     def modeCheck(self):
@@ -87,8 +89,8 @@ class SaltyBetter():
                 self.exhib = True
                 self.tourneyFlag = True
             elif (footer[2:len(footer)] == 'exhibition matches left!' or
-                    footer[3:len(footer)] == 'exhibition matches left!' or
-                    footer == 'Exhibition mode start!'):
+                  footer[3:len(footer)] == 'exhibition matches left!' or
+                  footer == 'Exhibition mode start!'):
                 self.tourney = False
                 self.exhib = True
             elif (footer == 'Matchmaking mode will be activated after the next exhibition match!'):
@@ -96,8 +98,8 @@ class SaltyBetter():
                 self.exhib = False
                 self.exhibFlag = True
             elif (footer[2:len(footer)] == 'more matches until the next tournament!' or
-                    footer[3:len(footer)] == 'more matches until the next tournament!' or
-                    footer[4:len(footer)] == 'more matches until the next tournament!'):
+                  footer[3:len(footer)] == 'more matches until the next tournament!' or
+                  footer[4:len(footer)] == 'more matches until the next tournament!'):
                 self.exhib = False
                 self.tourney = False
             else:
@@ -110,14 +112,16 @@ class SaltyBetter():
 
     def fightResult(self, betSlice):
         result = ''
-        # print('Result: ' + self.p1_name + '(' + str(self.p1) + ') vs ' + self.p2_name + '(' + str(self.p2) + ')' +
-        #               ' | Tournament: ' + str(self.tourney == True) + ' | Mode Text: ' + str(self.modeText), flush=True)
+
+        # no bet info
+        if (self.bet == None):
+            result += 'No bet info'
         # bet correctly
-        if (betSlice == self.bet):
+        elif (betSlice == self.bet):
             # if last battle of tournament or exhibition
             if(self.tourneyFlag or self.exhibFlag):
-                print('Result: ' + self.p1_name +
-                      ' vs ' + self.p2_name, flush=True)
+                result += 'Result of ' + self.p1_name + \
+                    ' vs ' + self.p2_name + ': '
                 # inform log of which mode is ending, update flag accordingly and add result to string
                 if (self.tourneyFlag):
                     result += 'Last tourney bet correctly'
@@ -133,8 +137,8 @@ class SaltyBetter():
                 except:
                     result += ' | Reporting fighters failed'
             elif(self.tourney or self.exhib):
-                print('Result: ' + self.p1_name +
-                      ' vs ' + self.p2_name, flush=True)
+                result += 'Result of ' + self.p1_name + \
+                    ' vs ' + self.p2_name + ': '
                 # add bet result to string and result of fight
                 if (self.tourney):
                     result = 'Tourney bet correctly'
@@ -148,8 +152,8 @@ class SaltyBetter():
                 except:
                     result += ' | Reporting fighters failed'
             else:
-                print('Result: ' + self.p1_name + '(' + str(self.p1) + ') vs ' +
-                      self.p2_name + '(' + str(self.p2) + ')', flush=True)
+                result += 'Result of ' + self.p1_name + '(' + str(self.p1) + ') vs ' + \
+                    self.p2_name + '(' + str(self.p2) + ')' + ': '
                 # add bet result to string and update future bet, alter database to reflect result
                 result += 'Bet correctly'
                 try:
@@ -166,15 +170,11 @@ class SaltyBetter():
                 except:
                     result += ' | Updating fighters failed'
 
-        # no bet info
-        elif (self.bet == None):
-            result += 'No bet info'
-
         # bet incorrectly
         elif (betSlice != self.bet):
             if(self.tourneyFlag or self.exhibFlag):
-                print('Result: ' + self.p1_name +
-                      ' vs ' + self.p2_name, flush=True)
+                result += 'Result of ' + self.p1_name + \
+                    ' vs ' + self.p2_name + ': '
                 # inform log of which mode is ending, update flag accordingly and add result to string
                 if (self.tourneyFlag):
                     result += 'Last tourney bet incorrectly'
@@ -190,8 +190,8 @@ class SaltyBetter():
                 except:
                     result += ' | Reporting fighters failed'
             elif(self.tourney or self.exhib):
-                print('Result: ' + self.p1_name +
-                      ' vs ' + self.p2_name, flush=True)
+                result += 'Result of ' + self.p1_name + \
+                    ' vs ' + self.p2_name + ': '
                 # add bet result to string and result of fight
                 if (self.tourney):
                     result = 'Tourney bet incorrectly'
@@ -205,8 +205,8 @@ class SaltyBetter():
                 except:
                     result += ' | Reporting fighters failed'
             else:
-                print('Result: ' + self.p1_name + '(' + str(self.p1) + ') vs ' +
-                      self.p2_name + '(' + str(self.p2) + ')', flush=True)
+                result += 'Result of ' + self.p1_name + '(' + str(self.p1) + ') vs ' + \
+                    self.p2_name + '(' + str(self.p2) + ')' + ': '
                 # add bet result to string and update future bet, alter database to reflect result
                 result += 'Bet incorrectly'
                 try:
@@ -236,10 +236,10 @@ class SaltyBetter():
         roulette = round(random.random())
         if(roulette == 0):
             self.bet = ' Red'
-            self.player1(self.wage)
+            return self.player1(self.wage)
         elif(roulette == 1):
             self.bet = 'Blue'
-            self.player2(self.wage)
+            return self.player2(self.wage)
 
     def betFight(self, balance, wager):
         info = ''
@@ -252,6 +252,7 @@ class SaltyBetter():
             info += 'Couldn\'t find fighter names'
         b = balance.text.replace(',', '')
         if(self.tourney or self.exhib):
+            info += self.p1_name + ' vs ' + self.p2_name
             try:
                 if(self.p1 != '0' or self.p2 != '0'):
                     self.p1 = '0'
@@ -260,12 +261,12 @@ class SaltyBetter():
                 if(self.tourney):
                     wager.send_keys(b)
                     self.wage = b
-                    self.rouletteSpin()
-                    info += ' | Tourney Balance: ' + balance.text
+                    info = self.rouletteSpin() + info
+                    info += ' | Tourney Balance: $' + balance.text
                 elif(self.exhib):
                     wager.send_keys(self.wage)
-                    info += ' | Balance: ' + balance.text
-                    self.rouletteSpin()
+                    info = self.rouletteSpin() + info
+                    info += ' | Balance: $' + balance.text
                 else:
                     info += 'Catch all, shouldn\'t appear'
             except:
@@ -319,18 +320,20 @@ class SaltyBetter():
 
             try:
                 if(winRate == 0):
-                    self.rouletteSpin()
+                    info = self.rouletteSpin() + info
                 elif(winRate > 0):
                     self.bet = ' Red'
-                    self.player1(self.wage)
+                    info = self.player1(self.wage) + info
                 elif(winRate < 0):
                     self.bet = 'Blue'
-                    self.player2(self.wage)
+                    info = self.player2(self.wage) + info
             except:
                 info += 'Failed winrate wager'
-                self.rouletteSpin()
+                info = self.rouletteSpin() + info
+            info += ' | Balance: $' + balance.text
         self.modeText = ''
-        sleep(2)
+        print(info, flush=True)
+        sleep(60)
 
     def autobet(self):
         self.loop = True
@@ -340,23 +343,19 @@ class SaltyBetter():
         # i = 0
         # prevBal = 0
 
-        if (self.modeText == ''):
+        if(self.modeText == ''):
             self.modeText = self.modeCheck()
 
-        print('Balance: ' + balance.text)
+        print('Balance: ' + balance.text, flush=True)
 
-        # main while loop of whole bot
         while self.loop == True:
 
-            # pulls betting info from under video to make all decisions on when to bet/update bets
             betSlice = betStatus.text[len(
                 betStatus.text)-7:len(betStatus.text)-3]
 
-            # if modeText is cleared, check for new modeText
             if (self.modeText == ''):
                 self.modeText = self.modeCheck()
 
-            # when fight is over and decision is made, run checks and update information as needed
             if(betSlice == ' Red' or betSlice == 'Blue'):
                 self.fightResult(betSlice)
             elif(self.bet == None and betSlice == 'OPEN'):
