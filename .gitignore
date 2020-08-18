@@ -2,3 +2,4 @@ options.txt
 dboptions.txt
 env/
 .vscode/
+__pycache__/

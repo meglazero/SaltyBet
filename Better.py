@@ -2,8 +2,9 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from time import sleep
 import random
-from pynput.keyboard import Key, Listener
-import db
+from webdriver_manager.chrome import ChromeDriverManager
+# from pynput.keyboard import Key, Listener
+# import db
 
 
 class SaltyBetter():
@@ -26,7 +27,7 @@ class SaltyBetter():
         chrome_options = Options()
         chrome_options.add_argument("--headless")
         chrome_options.add_argument("--window-size=1920x1080")
-        self.driver = webdriver.Chrome(options=chrome_options)
+        self.driver = webdriver.Chrome(ChromeDriverManager().install(), options=chrome_options)
 
     def login(self):
         try:
@@ -168,13 +169,13 @@ class SaltyBetter():
                 result += 'Bet correctly'
                 try:
                     if(self.bet == ' Red'):
-                        db.fighterWin(self.p1)
-                        db.fighterLose(self.p2)
+                        # db.fighterWin(self.p1)
+                        # db.fighterLose(self.p2)
                         result += ' | ' + self.p1_name + \
                             '(' + self.p1 + ') won'
                     elif(self.bet == 'Blue'):
-                        db.fighterWin(self.p2)
-                        db.fighterLose(self.p1)
+                        # db.fighterWin(self.p2)
+                        # db.fighterLose(self.p1)
                         result += ' | ' + self.p2_name + \
                             '(' + self.p2 + ') won'
                 except:
@@ -221,13 +222,13 @@ class SaltyBetter():
                 result += 'Bet incorrectly'
                 try:
                     if(self.bet == ' Red'):
-                        db.fighterWin(self.p2)
-                        db.fighterLose(self.p1)
+                        # db.fighterWin(self.p2)
+                        # db.fighterLose(self.p1)
                         result += ' | ' + self.p2_name + \
                             '(' + self.p2 + ') won'
                     elif(self.bet == 'Blue'):
-                        db.fighterWin(self.p1)
-                        db.fighterLose(self.p2)
+                        # db.fighterWin(self.p1)
+                        # db.fighterLose(self.p2)
                         result += ' | ' + self.p1_name + \
                             '(' + self.p1 + ') won'
                 except:
@@ -308,34 +309,35 @@ class SaltyBetter():
                 info += 'Exception in tourney or exhib bet'
         elif(self.tourney == False and self.exhib == False):
             try:
-                self.p1 = db.queryId(self.p1_name)
-                self.p2 = db.queryId(self.p2_name)
+                # self.p1 = db.queryId(self.p1_name)
+                # self.p2 = db.queryId(self.p2_name)
                 if(self.p1 == '0' or self.p2 == '0'):
                     if (self.p1 == '0' and self.p2 == '0'):
-                        self.p1 = db.insertFighter(self.p1_name)
-                        self.p2 = db.insertFighter(self.p2_name)
+                        # self.p1 = db.insertFighter(self.p1_name)
+                        # self.p2 = db.insertFighter(self.p2_name)
                         info += self.p1_name + \
                             '(' + self.p1 + ') vs ' + \
                             self.p2_name + '(' + self.p2 + ')'
-                        info += ' | added to db: ' + self.p1_name + ' & ' + self.p2_name
+                        # info += ' | added to db: ' + self.p1_name + ' & ' + self.p2_name
                     elif (self.p1 == '0'):
-                        self.p1 = db.insertFighter(self.p1_name)
+                        # self.p1 = db.insertFighter(self.p1_name)
                         info += self.p1_name + \
                             '(' + self.p1 + ') vs ' + \
                             self.p2_name + '(' + self.p2 + ')'
-                        info += ' | added to db: ' + self.p1_name
+                        # info += ' | added to db: ' + self.p1_name
                     elif (self.p2 == '0'):
-                        self.p2 = db.insertFighter(self.p2_name)
+                        # self.p2 = db.insertFighter(self.p2_name)
                         info += self.p1_name + \
                             '(' + self.p1 + ') vs ' + \
                             self.p2_name + '(' + self.p2 + ')'
-                        info += ' | added to db: ' + self.p2_name
+                        # info += ' | added to db: ' + self.p2_name
                 else:
                     info += self.p1_name + \
                         '(' + self.p1 + ') vs ' + \
                         self.p2_name + '(' + self.p2 + ')'
 
-                winRate = db.calcWinRate(self.p1, self.p2) * 100
+                # winRate = db.calcWinRate(self.p1, self.p2) * 100
+                winRate = 0
                 info += ' | Winrate: ' + str(winRate) + '%'
                 if(int(b) < 2000):
                     self.wage = int(b)
