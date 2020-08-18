@@ -1,2 +1,4 @@
 options.txt
 dboptions.txt
+env/
+.vscode/

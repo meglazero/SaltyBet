@@ -3,6 +3,7 @@ from selenium.webdriver.chrome.options import Options
 from time import sleep
 import random
 from pynput.keyboard import Key, Listener
+import db
 
 
 class SaltyBetter():
@@ -28,28 +29,33 @@ class SaltyBetter():
         self.driver = webdriver.Chrome(options=chrome_options)
 
     def login(self):
-        self.driver.get('https://www.saltybet.com/authenticate?signin=1')
+        try:
+            self.driver.get('https://www.saltybet.com/authenticate?signin=1')
 
-        sleep(2)
+            sleep(2)
 
-        options = open(r".\options.txt", "r")
-        user = options.readline()
-        userpass = options.readline()
-        options.close()
-        user = str(user[10:len(user)])
-        userpass = str(userpass[10:len(userpass)])
+            options = open(r".\options.txt", "r")
+            user = options.readline()
+            userpass = options.readline()
+            options.close()
+            user = str(user[10:len(user)])
+            userpass = str(userpass[10:len(userpass)])
 
-        email = self.driver.find_element_by_xpath('//*[@id="email"]')
-        email.send_keys(user)
-        sleep(1)
+            email = self.driver.find_element_by_xpath('//*[@id="email"]')
+            print("Entering username", flush=True)
+            email.send_keys(user)
+            sleep(1)
 
-        password = self.driver.find_element_by_xpath('//*[@id="pword"]')
-        password.send_keys(userpass)
-        sleep(1)
+            password = self.driver.find_element_by_xpath('//*[@id="pword"]')
+            print("Entering password", flush=True)
+            password.send_keys(userpass)
+            sleep(1)
 
-        sign_in = self.driver.find_element_by_xpath(
-            '//*[@id="signinform"]/div[3]/div/span/input')
-        sign_in.click()
+            sign_in = self.driver.find_element_by_xpath('//*[@id="signinform"]/div[3]/div/span/input')
+            print("Signing in", flush=True)
+            sign_in.click()
+        except:
+            print('Already logged in I guess? or log in failed maybe idfk')
 
     def player1(self, wageBet):
         try:
@@ -77,11 +83,10 @@ class SaltyBetter():
 
     def modeCheck(self):
         try:
-            footer = self.driver.find_element_by_xpath(
-                '//*[@id="footer-alert"]').text
+            footer = self.driver.find_element_by_xpath('//*[@id="footer-alert"]').text
             # self.tourney = self.driver.find_element_by_xpath('//*[@id="tournament-note"]')
             if (footer[2:len(footer)] == 'characters are left in the bracket!' or
-                    footer[3:len(footer)] == 'characters are left in the bracket!'):
+                footer[3:len(footer)] == 'characters are left in the bracket!'):
                 self.exhib = False
                 self.tourney = True
             elif (footer == 'FINAL ROUND! Stay tuned for exhibitions after the tournament!'):
@@ -102,6 +107,11 @@ class SaltyBetter():
                   footer[4:len(footer)] == 'more matches until the next tournament!'):
                 self.exhib = False
                 self.tourney = False
+            elif (footer != ' ' or footer != ''):
+                self.exhibFlag = False
+                self.exhib = False
+                self.tourneyFlag = False
+                self.tourney = False
             else:
                 self.exhib = False
                 self.tourney = False
@@ -121,7 +131,7 @@ class SaltyBetter():
             # if last battle of tournament or exhibition
             if(self.tourneyFlag or self.exhibFlag):
                 result += 'Result of ' + self.p1_name + \
-                    ' vs ' + self.p2_name + ': '
+                      ' vs ' + self.p2_name + ': '
                 # inform log of which mode is ending, update flag accordingly and add result to string
                 if (self.tourneyFlag):
                     result += 'Last tourney bet correctly'
@@ -138,7 +148,7 @@ class SaltyBetter():
                     result += ' | Reporting fighters failed'
             elif(self.tourney or self.exhib):
                 result += 'Result of ' + self.p1_name + \
-                    ' vs ' + self.p2_name + ': '
+                      ' vs ' + self.p2_name + ': '
                 # add bet result to string and result of fight
                 if (self.tourney):
                     result = 'Tourney bet correctly'
@@ -153,7 +163,7 @@ class SaltyBetter():
                     result += ' | Reporting fighters failed'
             else:
                 result += 'Result of ' + self.p1_name + '(' + str(self.p1) + ') vs ' + \
-                    self.p2_name + '(' + str(self.p2) + ')' + ': '
+                      self.p2_name + '(' + str(self.p2) + ')' + ': '
                 # add bet result to string and update future bet, alter database to reflect result
                 result += 'Bet correctly'
                 try:
@@ -174,7 +184,7 @@ class SaltyBetter():
         elif (betSlice != self.bet):
             if(self.tourneyFlag or self.exhibFlag):
                 result += 'Result of ' + self.p1_name + \
-                    ' vs ' + self.p2_name + ': '
+                      ' vs ' + self.p2_name + ': '
                 # inform log of which mode is ending, update flag accordingly and add result to string
                 if (self.tourneyFlag):
                     result += 'Last tourney bet incorrectly'
@@ -191,7 +201,7 @@ class SaltyBetter():
                     result += ' | Reporting fighters failed'
             elif(self.tourney or self.exhib):
                 result += 'Result of ' + self.p1_name + \
-                    ' vs ' + self.p2_name + ': '
+                      ' vs ' + self.p2_name + ': '
                 # add bet result to string and result of fight
                 if (self.tourney):
                     result = 'Tourney bet incorrectly'
@@ -206,7 +216,7 @@ class SaltyBetter():
                     result += ' | Reporting fighters failed'
             else:
                 result += 'Result of ' + self.p1_name + '(' + str(self.p1) + ') vs ' + \
-                    self.p2_name + '(' + str(self.p2) + ')' + ': '
+                      self.p2_name + '(' + str(self.p2) + ')' + ': '
                 # add bet result to string and update future bet, alter database to reflect result
                 result += 'Bet incorrectly'
                 try:
@@ -227,21 +237,32 @@ class SaltyBetter():
         else:
             result += 'Did not bet correctly, incorrectly, or None somehow'
 
+        if (self.modeText != ''):
+            result += ' | Footer: ' + self.modeText
+        else:
+            result += ' | No footer saved '
         print(result, flush=True)
         self.bet = None
         self.wage = 100
         sleep(5)
 
-    def rouletteSpin(self):
-        roulette = round(random.random())
-        if(roulette == 0):
-            self.bet = ' Red'
-            return self.player1(self.wage)
-        elif(roulette == 1):
-            self.bet = 'Blue'
-            return self.player2(self.wage)
+    def rouletteSpin(self, wager):
+        try:
+            roulette = round(random.random())
+            if(roulette == 0):
+                self.bet = ' Red'
+                return self.player1(wager)
+            elif(roulette == 1):
+                self.bet = 'Blue'
+                return self.player2(wager)
+        except:
+            return 'Roulette failed'
 
     def betFight(self, balance, wager):
+        if (self.modeText == ''):
+                self.modeText = self.modeCheck()
+                if (self.modeText == ''):
+                    return
         info = ''
         try:
             self.p1_name = self.driver.find_element_by_xpath(
@@ -259,14 +280,28 @@ class SaltyBetter():
                     self.p2 = '0'
                 sleep(5)
                 if(self.tourney):
-                    wager.send_keys(b)
-                    self.wage = b
-                    info = self.rouletteSpin() + info
-                    info += ' | Tourney Balance: $' + balance.text
+                    if(int(b) > 25000):
+                        if(wager.get_attribute("disabled") != "disabled"):
+                            wager.send_keys(self.wage)
+                            info = self.rouletteSpin(self.wage) + info
+                            info += ' | Tourney Balance(>25k): $' + balance.text
+                        else:
+                            info += 'Wager not visible'
+                    else:
+                        if(wager.get_attribute("disabled") != "disabled"):
+                            wager.send_keys(b)
+                            self.wage = b
+                            info = self.rouletteSpin(self.wage) + info
+                            info += ' | Tourney Balance: $' + balance.text
+                        else:
+                            info += 'Wager not visible'
                 elif(self.exhib):
-                    wager.send_keys(self.wage)
-                    info = self.rouletteSpin() + info
-                    info += ' | Balance: $' + balance.text
+                    if(wager.get_attribute("disabled") != "disabled"):
+                        wager.send_keys(self.wage)
+                        info = self.rouletteSpin(self.wage) + info
+                        info += ' | Balance: $' + balance.text
+                    else:
+                        info += 'Wager not visible'
                 else:
                     info += 'Catch all, shouldn\'t appear'
             except:
@@ -302,7 +337,7 @@ class SaltyBetter():
 
                 winRate = db.calcWinRate(self.p1, self.p2) * 100
                 info += ' | Winrate: ' + str(winRate) + '%'
-                if(int(b) < 10000):
+                if(int(b) < 2000):
                     self.wage = int(b)
                 else:
                     if(abs(winRate) >= 50):
@@ -319,21 +354,25 @@ class SaltyBetter():
                 info += ' | Something in first half of bet failed'
 
             try:
-                if(winRate == 0):
-                    info = self.rouletteSpin() + info
-                elif(winRate > 0):
-                    self.bet = ' Red'
-                    info = self.player1(self.wage) + info
-                elif(winRate < 0):
-                    self.bet = 'Blue'
-                    info = self.player2(self.wage) + info
+                if(wager.get_attribute("disabled") != "disabled"):
+                    wager.send_keys(self.wage)
+                    if(winRate == 0):
+                        info = self.rouletteSpin(self.wage) + info
+                    elif(winRate > 0):
+                        self.bet = ' Red'
+                        info = self.player1(self.wage) + info
+                    elif(winRate < 0):
+                        self.bet = 'Blue'
+                        info = self.player2(self.wage) + info
+                else:
+                    info += 'Wager not visible'
             except:
                 info += 'Failed winrate wager'
-                info = self.rouletteSpin() + info
+                info = self.rouletteSpin(self.wage) + info
             info += ' | Balance: $' + balance.text
         self.modeText = ''
         print(info, flush=True)
-        sleep(60)
+        sleep(15)
 
     def autobet(self):
         self.loop = True
@@ -350,8 +389,7 @@ class SaltyBetter():
 
         while self.loop == True:
 
-            betSlice = betStatus.text[len(
-                betStatus.text)-7:len(betStatus.text)-3]
+            betSlice = betStatus.text[len(betStatus.text)-7:len(betStatus.text)-3]
 
             if (self.modeText == ''):
                 self.modeText = self.modeCheck()
